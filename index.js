@@ -37,7 +37,7 @@ app.post('/webhook/:token', (req, res) => {
 
   if (!services[image]) return console.log(`Received updated for "${image}" but not configured to handle updates for this image.`)
 
-  const services = Array.isArray(services[image].services)
+  const updatedServices = Array.isArray(services[image].services)
     ? services[image].services
     : [services[image].service];
   
@@ -47,7 +47,7 @@ app.post('/webhook/:token', (req, res) => {
       if (error) return console.error(error)
 
       // Deploy the image and force a restart of the associated service
-      for (const service of services) {
+      for (const service of updatedServices) {
         console.log(`Deploying ${image} to ${service}…`)
         child_process.exec(`${dockerCommand} service update ${service} --force --with-registry-auth --image=${image}`,
           (error, stdout, stderr) => {
